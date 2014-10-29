@@ -1,0 +1,37 @@
+\documentclass{article}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+<<echo = F>>=
+library(RCurl)
+read_URL <- getURL("https://raw.githubusercontent.com/jrwolf/IT497/master/NYCHealthData.csv")
+temporaryFile <- tempfile()
+con <- file(temporaryFile, open = "w")
+cat(read_URL, file = con) 
+close(con)
+x <- read.csv(temporaryFile)
+
+x$DBA <- as.character(x$DBA)
+x$DBA[x$DBA == "MCDONALD'S"] <- "McD"
+x$DBA[x$DBA == "MCDONALDS"] <- "McD"
+x$DBA[x$DBA == "MCDONALD'S (MACY'S 7TH FL)"] <- "McD"
+x$DBA[x$DBA == "MCDONALD"] <- "McD"
+x$DBA[x$DBA == "MCDONALDS RESTAURANT"] <- "McD"
+x$DBA[x$DBA == "MCDONALD'S RESTAURANT"] <- "McD"
+x$DBA[x$DBA == "MCDONALD'S RESTAURANT #3391"] <- "McD"
+x$DBA[x$DBA == "MCDONALD AVENUE DINER"] <- "McD"
+x$DBA[x$DBA == "MCDONALDS (#11542)"] <- "McD"
+x$DBA[x$DBA == "MCDONALDS 17754"] <- "McD"
+x$DBA[x$DBA == "McDonald's"] <- "McD"
+x$DBA[x$DBA == "Mcdonald's"] <- "McD"
+x$DBA[x$DBA == "WENDY'S OLD FASHIONED HAMBURGERS"] <- "WENDY'S"
+x$DBA[x$DBA == "Wendy's Old Fashioned Hamburgers"] <- "WENDY'S"
+
+@
+From the graph shown below we can say that Wendy's is cleaner than McDonald's, as it never received grades beyond P. Wendy's received A or B grade most of the times and a P grade once. Whereas, McDonald's received Z grades too. So, we can answer the question as, No Mcdonald's is not cleaner than Wendy's.
+<<label=fig2,fig=TRUE,echo=True>>=
+library(ggplot2)
+ggplot(data=x, aes(x=GRADEDATE, y=CURRENTGRADE, fill=DBA))+
+  geom_bar(stat="identity", position=position_dodge())
+@
+\end{document}

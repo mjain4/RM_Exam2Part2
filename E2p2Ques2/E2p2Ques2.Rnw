@@ -1,0 +1,88 @@
+\documentclass{article}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+<<echo=FALSE>>=
+library(RCurl)
+read.url <- getURL("https://raw.githubusercontent.com/jrwolf/IT497/master/spendingdata.txt")
+temporaryFile <- tempfile()
+con <- file(temporaryFile, open = "w")
+cat(read.url, file = con) 
+close(con)
+data <- readLines(temporaryFile)
+data.1 <- data[32:35]
+
+data.2 <- gsub(pattern = "Average Number of Purchases",
+                   replacement = "Average_Number_of_Purchases",
+                   x = data.1,
+                   ignore.case = TRUE,
+                   perl = FALSE,
+                   fixed = FALSE,
+                   useBytes = FALSE)
+                   
+data.3 <- gsub(pattern = "Average Transaction Value",
+                   replacement = "Average_Transaction_Value",
+                   x = data.2,
+                   ignore.case = TRUE,
+                   perl = FALSE,
+                   fixed = FALSE,
+                   useBytes = FALSE)
+
+data.4 <- gsub(pattern = "Value of Payments in %",
+                   replacement = "Value_of_Payments_in_%",
+                   x = data.3,
+                   ignore.case = TRUE,
+                   perl = FALSE,
+                   fixed = FALSE,
+                   useBytes = FALSE)
+                   
+data.5 <- gsub(pattern = ",",
+                   replacement = " ",
+                   x = data.4,
+                   ignore.case = TRUE,
+                   perl = FALSE,
+                   fixed = FALSE,
+                   useBytes = FALSE)
+
+data.6 <- data.5[3]
+
+z <- chartr("$"," ",data.6)
+
+data.list<-strsplit(data.5, " ")
+data.list.1 <- strsplit(z, " ")
+
+data.mat<-do.call(rbind,data.list)
+data.mat.1<-do.call(rbind,data.list.1)
+data.mat.1 <- data.mat.1
+data.new <- as.data.frame(data.mat[2:4,1:8])
+data.new.1 <- as.data.frame(data.mat.1[])
+
+library(plyr)
+data.new <- rename(data.new, c("V1"="Type", "V2"="Cash", "V3"="Check","V4"="Credit","V5"="Debit","V6"="Electronic","V7"="Other","V8"="Total"))
+data.new.1 <- rename(data.new.1, c("V1"="Type", "V3"="Cash", "V5"="Check","V7"="Credit","V9"="Debit","V11"="Electronic","V13"="Other","V15"="Total"))
+
+data.new$Cash<-as.numeric(as.character(data.new$Cash))
+data.new$Check<-as.numeric(as.character(data.new$Check))
+data.new$Credit<-as.numeric(as.character(data.new$Credit))
+data.new$Debit<-as.numeric(as.character(data.new$Debit))
+data.new$Electronic<-as.numeric(as.character(data.new$Electronic))
+data.new$Other<-as.numeric(as.character(data.new$Other))
+data.new$Total<-as.numeric(as.character(data.new$Total))
+
+data.new.1$Cash<-as.numeric(as.character(data.new.1$Cash))
+data.new.1$Check<-as.numeric(as.character(data.new.1$Check))
+data.new.1$Credit<-as.numeric(as.character(data.new.1$Credit))
+data.new.1$Debit<-as.numeric(as.character(data.new.1$Debit))
+data.new.1$Electronic<-as.numeric(as.character(data.new.1$Electronic))
+data.new.1$Other<-as.numeric(as.character(data.new.1$Other))
+data.new.1$Total<-as.numeric(as.character(data.new.1$Total))
+data.new.x <- data.new[-2,]
+@
+
+\textbf{Cash is the most used retail payment instrument. }
+
+By value, cash accounts for a relatively small share of total consumer transaction activity at \Sexpr{round(data.new.x$Cash[2])} percent, while electronic methods make up  \Sexpr{round(data.new.x$Electronic[2])} percent and checks  \Sexpr{round(data.new.x$Check[2])} percent. These findings suggest that although consumers do not use electronic methods or checks very often, when they do, it tends to be for much higher-value transactions. In contrast, cash is used quite often, but primarily for low-value transactions. In fact, the average value of a cash transaction is only \verb=$=\Sexpr{round(data.new.1$Cash[1])}, compared with \verb=$=\Sexpr{round(data.new.1$Check[1])} for checks and \verb=$=\Sexpr{round(data.new.1$Debit[1])} for debit cards. 
+
+
+\end{document}

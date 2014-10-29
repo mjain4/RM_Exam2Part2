@@ -1,0 +1,26 @@
+
+
+```{r}
+library(knitr)
+library(RCurl)
+URL <- getURL("https://raw.githubusercontent.com/jrwolf/IT497/master/databreaches.csv")
+temporaryFile <- tempfile()
+con <- file(temporaryFile, open = "w")
+cat(URL, file = con) 
+close(con)
+URL_data<- read.csv(temporaryFile)
+newdata <- subset(URL_data, YEAR > 2007)
+```
+
+Graph shown below represents the number of data breaches by year. We can see in the graph that maximum number of security breches were in the year 2011 and minimum numbers of security breaches were recorded in the year 2009.
+
+```{r fig.width=7, fig.height=6}
+library(ggplot2)
+ggplot(data=newdata, aes(x=YEAR, y=RECORDS))+geom_bar(stat="identity", position=position_dodge())
+```
+
+Graph shown below represents the number of breaches by Method per year. According to the data plotted in the graph we can say maximum number of security breaches were done through the hacking method.
+```{r fig.width=9, fig.height=8}
+ggplot(data=newdata, aes(x=YEAR, y=RECORDS, group=METHOD, fill=METHOD))+geom_bar(stat="identity", position=position_dodge())
+```
+

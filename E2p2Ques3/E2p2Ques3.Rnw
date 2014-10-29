@@ -1,0 +1,27 @@
+\documentclass{article}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\emph{Plotting graph using local file}
+
+Graph shown below is displayed using a source file in working directory.This local R code is reading the data file and plotting a scatter plot with x = miles walked by the FitBit users and y = steps walked.
+
+<<fig=TRUE,echo = T>>==
+source("E2p2Ques3Local.R")
+@
+
+
+
+
+
+
+\emph{Plotting graph using Remote file}
+
+Graph shown below is displayed using a source file stored in GitHub. The remote R code is reading the data file and plotting a scatterplot with y = miles walked by the FitBit users and x = steps walked.
+<<fig=TRUE,echo = T>>==
+library(devtools)
+x <- "https://raw.githubusercontent.com/mjain4/rstudio-export/master/E2p2Ques3Remote.R"
+source_url(x)
+@
+
+\end{document}
